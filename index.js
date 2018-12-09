@@ -60,6 +60,10 @@ const server = http.createServer((req, res) => {
             var payloadString = JSON.stringify(payload)
 
             // return the response
+
+            // returning the response in the form of json
+            res.setHeader('Content-Type', 'application/json')
+            
             res.writeHead(statusCode)
             res.end(payloadString)
 
