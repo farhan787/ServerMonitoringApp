@@ -1,11 +1,38 @@
 const http = require('http')
 const url = require('url')
 var StringDecoder = require('string_decoder').StringDecoder
+const https = require('https')
+const fs = require('fs')
 
+const config = require('./config.js')
 const port = process.env.PORT || 3000
 
-const server = http.createServer((req, res) => {
-    
+// Instantiate the http server
+const httpServer = http.createServer(function(req, res) {
+    unifiedServer(req, res)
+})
+
+httpServer.listen(config.httpPort, () => {
+    console.log(`Listening on port ${config.httpPort} in ${config.envName} mode...`)
+})
+
+// Instantiate the http server
+var httpsServerOptions = {
+    'key': fs.readFileSync('./https/key.pem'),
+    'cert': fs.readFileSync('./https/cert.pem') 
+}
+
+const httpsServer = https.createServer(httpsServerOptions, function(req, res) {
+    unifiedServer(req, res)
+})
+
+httpsServer.listen(config.httpsPort, () => {
+    console.log(`Listening on port ${config.httpsPort} in ${config.envName} mode...`)
+})
+
+
+// All the server logic for both http and https
+var unifiedServer = function(req, res) {
     // parsing the url
     var parsedUrl = url.parse(req.url, true)
     
@@ -70,13 +97,8 @@ const server = http.createServer((req, res) => {
             console.log('Returning this response: ' + statusCode, payloadString)
         })
 
-    })    
-})
-
-
-server.listen(port, () => {
-    console.log(`Listening on port ${port}`)
-})
+    }) 
+}
 
 // Handlers
 
