@@ -5,7 +5,6 @@ const https = require('https')
 const fs = require('fs')
 
 const config = require('./config.js')
-const port = process.env.PORT || 3000
 
 // Instantiate the http server
 const httpServer = http.createServer(function(req, res) {
@@ -35,12 +34,13 @@ httpsServer.listen(config.httpsPort, () => {
 var unifiedServer = function(req, res) {
     // parsing the url
     var parsedUrl = url.parse(req.url, true)
-    
+    console.log(parsedUrl)
+
     var path = parsedUrl.pathname
     var trimmedPath = path.replace(/^\/+|\/+$/g, '')
 
     // get the queryString as an object
-    var queryStringObject = parsedUrl.query
+    var queryString = parsedUrl.query
 
     // get the headers as an object
     var header = req.headers
@@ -69,7 +69,7 @@ var unifiedServer = function(req, res) {
         // Construct the data object to send to the handler
         var data = {
             'trimmedPath': trimmedPath,
-            'queryString': queryStringObject,
+            'queryString': queryString,
             'method': method,
             'headers': header,
             'payload': buffer
@@ -104,9 +104,9 @@ var unifiedServer = function(req, res) {
 
 var handlers = {}
 
-handlers.sample = (data, callback) => {
+handlers.ping = (data, callback) => {
     // callback a https status code, and a payload object
-    callback(406, {'name': 'sample handler'})
+    callback(200)
 }
 
 // Not found handler
@@ -116,5 +116,5 @@ handlers.notFound = (data, callback) => {
 
 // Define a request router
 var router = {
-    'sample': handlers.sample
+    'ping': handlers.ping
 }
