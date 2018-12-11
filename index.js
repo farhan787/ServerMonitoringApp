@@ -1,10 +1,12 @@
 const http = require('http')
 const url = require('url')
-var StringDecoder = require('string_decoder').StringDecoder
+var { StringDecoder } = require('string_decoder')
 const https = require('https')
 const fs = require('fs')
 
 const config = require('./config.js')
+const handlers = require('./lib/handlers')
+const helpers = require('./lib/helpers')
 
 // Instantiate the http server
 const httpServer = http.createServer(function(req, res) {
@@ -34,7 +36,6 @@ httpsServer.listen(config.httpsPort, () => {
 var unifiedServer = function(req, res) {
     // parsing the url
     var parsedUrl = url.parse(req.url, true)
-    console.log(parsedUrl)
 
     var path = parsedUrl.pathname
     var trimmedPath = path.replace(/^\/+|\/+$/g, '')
@@ -46,10 +47,10 @@ var unifiedServer = function(req, res) {
     var header = req.headers
 
     // get the http method
-    var method = req.method
+    var method = req.method.toLowerCase()
 
     // get the payload if there any
-    var decoder = new StringDecoder('utf-8')
+    var decoder = new StringDecoder('utf8')
     var buffer = ''
 
     // payloads come within a data stream, so we've to extract the payload from data stream
@@ -68,11 +69,11 @@ var unifiedServer = function(req, res) {
 
         // Construct the data object to send to the handler
         var data = {
-            'trimmedPath': trimmedPath,
-            'queryString': queryString,
-            'method': method,
-            'headers': header,
-            'payload': buffer
+            trimmedPath,
+            queryString,
+            method,
+            header,
+            'payload': helpers.parseJsonToObject(buffer)
         }
 
         // Route the request to the handler specified in the router
@@ -100,21 +101,8 @@ var unifiedServer = function(req, res) {
     }) 
 }
 
-// Handlers
-
-var handlers = {}
-
-handlers.ping = (data, callback) => {
-    // callback a https status code, and a payload object
-    callback(200)
-}
-
-// Not found handler
-handlers.notFound = (data, callback) => {
-    callback(400)
-}
-
 // Define a request router
 var router = {
-    'ping': handlers.ping
+    'ping': handlers.ping,
+    'users': handlers.users
 }

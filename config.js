@@ -4,14 +4,16 @@ var environments = {}
 environments.staging = {
     'httpPort': 3000,
     'httpsPort': 3001,
-    'envName': 'staging'
+    'envName': 'staging',
+    'hashingSecret': 'This is a secret'
 }
 
 // production default environment
 environments.production = {
     'httpPort': 5000,
     'httpsPort': 5001,
-    'envName': 'production'    
+    'envName': 'production',
+    'hashingSecret': 'This is also a secret'
 }
 
 // determine the environment passed in command line
