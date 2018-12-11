@@ -44,7 +44,7 @@ var unifiedServer = function(req, res) {
     var queryString = parsedUrl.query
 
     // get the headers as an object
-    var header = req.headers
+    var headers = req.headers
 
     // get the http method
     var method = req.method.toLowerCase()
@@ -72,7 +72,7 @@ var unifiedServer = function(req, res) {
             trimmedPath,
             queryString,
             method,
-            header,
+            headers,
             'payload': helpers.parseJsonToObject(buffer)
         }
 
@@ -104,5 +104,6 @@ var unifiedServer = function(req, res) {
 // Define a request router
 var router = {
     'ping': handlers.ping,
-    'users': handlers.users
+    'users': handlers.users,
+    'tokens': handlers.tokens
 }
